@@ -16,15 +16,15 @@ public class ItemMapper {
                 .request(item.getRequest() != null ? item.getRequest() : null)
                 .build();
     }
-    // преоборазование ДТО в итем
+
     public Item toItem(ItemDto itemDto) {
-      return Item.builder()
-              .id(itemDto.getId())
-              .name(itemDto.getName())
-              .description(itemDto.getDescription())
-              .available(itemDto.getAvailable())
-              .request(itemDto.getRequest())
-              .build();
+        return Item.builder()
+                .id(itemDto.getId())
+                .name(itemDto.getName())
+                .description(itemDto.getDescription())
+                .available(itemDto.getAvailable())
+                .request(itemDto.getRequest())
+                .build();
     }
 }
 
