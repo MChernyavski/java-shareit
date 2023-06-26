@@ -6,6 +6,7 @@ import ru.practicum.shareit.exception.ValidateException;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -13,22 +14,23 @@ public class ItemStorageImpl implements ItemStorage {
 
     private Long itemId = 1L;
     private final Map<Long, Item> items = new HashMap<>();
+    private final Map<Long, List<Long>> itemsByUser = new HashMap<>();
 
     @Override
-    public Item addItem(Item item) {
+    public Item addItem(Item item, long userId) {
         validateItem(item);
-        item.setId(itemId);
-        itemId++;
+        item.setId(itemId++);
         items.put(item.getId(), item);
+        itemsByUser.computeIfAbsent(userId, k -> new ArrayList<>()).add(item.getId());
         log.info("Добавили новую вещь {}", item.getName());
         return item;
     }
 
+
     @Override
     public Item updateItem(Item item) {
-        if (!items.containsKey(item.getId())) {
-            log.error("ERROR: Не существует вещи с таким id {} ", item.getId());
-            throw new ValidateException("Отсутствует вещь c id " + item.getId());
+        if (items.get(item.getId()) == null) {
+            throw new ValidateException("Не существует такой вещи " + item);
         }
         validateItem(item);
         items.put(item.getId(), item);
@@ -48,6 +50,12 @@ public class ItemStorageImpl implements ItemStorage {
     @Override
     public List<Item> getAllItems() {
         return new ArrayList<>(items.values());
+    }
+
+    @Override
+    public List<Item> getAllItemsByUser(long userId) {
+        List<Long> itemsIdsByUser = itemsByUser.getOrDefault(userId, new ArrayList<>());
+        return itemsIdsByUser.stream().map(items::get).collect(Collectors.toList());
     }
 
     @Override

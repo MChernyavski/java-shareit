@@ -6,12 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import javax.validation.Valid;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @RestController
 @RequestMapping("/users")
 @Slf4j
@@ -22,12 +18,14 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public UserDto createUser(@Valid @RequestBody UserDto userDto) {
+    public UserDto createUser(@RequestBody UserDto userDto) {
+        log.info("Добавили нового пользователя {}", userDto.getName());
         return userService.createUser(userDto);
     }
 
     @PatchMapping("/{id}")
-    public UserDto updateUser(@Valid @RequestBody UserDto userDto, @PathVariable long id) {
+    public UserDto updateUser(@RequestBody UserDto userDto, @PathVariable long id) {
+        log.info("Обновили данные пользователя {}", userDto.getName());
         return userService.updateUser(userDto, id);
     }
 
@@ -38,11 +36,13 @@ public class UserController {
 
     @GetMapping("/{id}")
     public UserDto getUser(@PathVariable long id) {
+        log.info("Получили данные пользователя с id {}", id);
         return userService.getUserById(id);
     }
 
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable long id) {
+        log.info("Удалили данные пользователя с id {}", id);
         userService.deleteUser(id);
     }
 }

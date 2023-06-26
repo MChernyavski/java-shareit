@@ -22,7 +22,6 @@ public class UserStorageImpl implements UserStorage {
         user.setId(id);
         users.put(user.getId(), user);
         id++;
-        log.info("Добавили нового пользователя {}", user.getName());
         return user;
     }
 
@@ -37,12 +36,11 @@ public class UserStorageImpl implements UserStorage {
         if (user.getName() != null && !user.getName().isEmpty()) {
             updatedUser.setName(user.getName());
         }
-        if (user.getEmail() != null && !user.getEmail().isEmpty()) {
-            updatedUser.setEmail(user.getEmail());
-        }
-        users.put(updatedUser.getId(), updatedUser);
-        log.info("Обновили данные пользователя {}", updatedUser.getName());
-        return users.get(updatedUser.getId());
+       if (user.getEmail() != null && !user.getEmail().isEmpty()) {
+          updatedUser.setEmail(user.getEmail());
+       }
+       users.put(updatedUser.getId(), updatedUser);
+      return users.get(updatedUser.getId());
     }
 
     @Override
@@ -94,3 +92,4 @@ public class UserStorageImpl implements UserStorage {
         }
     }
 }
+
