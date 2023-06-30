@@ -24,18 +24,10 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto addItem(ItemDto itemDto, Long userId) {
         User user = userStorage.getUserById(userId);
         Item item = ItemMapper.toItem(itemDto, user);
-
-        //item.setOwner(userStorage.getUserById(userId));
         itemStorage.addItem(item);
         return ItemMapper.toItemDto(item);
     }
 
-    /*
-    User user = userStorage.getUserById(userId);
-Item item = ItemMapper.toItem(itemDto, user);
-itemStorage.addItem(item); //todo Тут уже не нужно передавать айди юзера, можешь взять его из предмета item.getUser().getId();
-return ItemMapper.toItemDto(item);
-     */
     @Override
     public ItemDto updateItem(long userId, ItemDto itemDto) {
         User user = userStorage.getUserById(userId);

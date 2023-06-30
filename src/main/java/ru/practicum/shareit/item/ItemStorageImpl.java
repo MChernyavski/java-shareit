@@ -6,7 +6,6 @@ import ru.practicum.shareit.exception.ValidateException;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -56,8 +55,6 @@ public class ItemStorageImpl implements ItemStorage {
     @Override
     public List<Item> getAllItemsByUser(long userId) {
         return itemsByUser.get(userId);
-       // List<Long> itemsIdsByUser = itemsByUser.getOrDefault(userId, new ArrayList<>());
-        //   return itemsIdsByUser.stream().map(items::get).collect(Collectors.toList());
     }
 
     @Override
