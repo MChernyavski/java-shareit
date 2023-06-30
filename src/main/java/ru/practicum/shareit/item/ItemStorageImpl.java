@@ -14,14 +14,14 @@ public class ItemStorageImpl implements ItemStorage {
 
     private Long itemId = 1L;
     private final Map<Long, Item> items = new HashMap<>();
-    private final Map<Long, List<Long>> itemsByUser = new HashMap<>();
+    private final Map<Long, List<Item>> itemsByUser = new HashMap<>();
 
     @Override
-    public Item addItem(Item item, long userId) {
+    public Item addItem(Item item) {
         validateItem(item);
         item.setId(itemId++);
         items.put(item.getId(), item);
-        itemsByUser.computeIfAbsent(userId, k -> new ArrayList<>()).add(item.getId());
+        itemsByUser.computeIfAbsent(item.getOwner().getId(), k -> new ArrayList<>()).add(item);
         log.info("Добавили новую вещь {}", item.getName());
         return item;
     }
@@ -40,11 +40,12 @@ public class ItemStorageImpl implements ItemStorage {
 
     @Override
     public Item getItemById(long id) {
-        if (!items.containsKey(id)) {
+        Item item = items.get(id);
+        if (item == null) {
             log.error("ERROR: Не существует вещи с таким id {} ", id);
             throw new ValidateException("Отсутствует вещь c id " + id);
         }
-        return items.get(id);
+        return item;
     }
 
     @Override
@@ -54,8 +55,9 @@ public class ItemStorageImpl implements ItemStorage {
 
     @Override
     public List<Item> getAllItemsByUser(long userId) {
-        List<Long> itemsIdsByUser = itemsByUser.getOrDefault(userId, new ArrayList<>());
-        return itemsIdsByUser.stream().map(items::get).collect(Collectors.toList());
+        return itemsByUser.get(userId);
+       // List<Long> itemsIdsByUser = itemsByUser.getOrDefault(userId, new ArrayList<>());
+        //   return itemsIdsByUser.stream().map(items::get).collect(Collectors.toList());
     }
 
     @Override

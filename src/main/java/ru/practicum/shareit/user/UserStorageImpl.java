@@ -25,9 +25,10 @@ public class UserStorageImpl implements UserStorage {
         return user;
     }
 
+    // if (items.get(item.getId()) == null)
     @Override
     public User update(User user) {
-        if (user.getId() == 0 && !users.containsKey(user.getId())) {
+        if (users.get(user.getId()) == null) {
             log.error("ERROR: Не существует пользователя с таким id {} ", user.getId());
             throw new ValidateException("Отсутствует пользователь c id " + user.getId());
         }
@@ -36,11 +37,11 @@ public class UserStorageImpl implements UserStorage {
         if (user.getName() != null && !user.getName().isEmpty()) {
             updatedUser.setName(user.getName());
         }
-       if (user.getEmail() != null && !user.getEmail().isEmpty()) {
-          updatedUser.setEmail(user.getEmail());
-       }
-       users.put(updatedUser.getId(), updatedUser);
-      return users.get(updatedUser.getId());
+        if (user.getEmail() != null && !user.getEmail().isEmpty()) {
+            updatedUser.setEmail(user.getEmail());
+        }
+        users.put(updatedUser.getId(), updatedUser);
+        return users.get(updatedUser.getId());
     }
 
     @Override
@@ -50,11 +51,12 @@ public class UserStorageImpl implements UserStorage {
 
     @Override
     public User getUserById(long id) {
-        if (!users.containsKey(id)) {
+        User user = users.get(id);
+        if (user == null) {
             log.error("ERROR: Не существует пользователя с таким id {} ", id);
             throw new NotFoundException("Отсутствует пользователь c id " + id);
         }
-        return users.get(id);
+        return user;
     }
 
     @Override
