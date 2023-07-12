@@ -69,8 +69,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingResponseDto approveBooking(long userId, long bookingId, boolean approved) {
 
-        Booking booking = bookingRepository.findById(bookingId).
-                orElseThrow(() -> new NotFoundException("Бронирование с id {} не найдено" + bookingId));
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new NotFoundException("Бронирование с id {} не найдено" + bookingId));
 
         Item item = booking.getItem();
 
@@ -110,8 +110,8 @@ public class BookingServiceImpl implements BookingService {
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new NotFoundException("Не найден пользователь с id " + userId));
 
-        Booking booking = bookingRepository.findById(bookingId).
-                orElseThrow(() -> new NotFoundException("Не найдено бронирование с id " + bookingId));
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new NotFoundException("Не найдено бронирование с id " + bookingId));
 
         long bookerId = booking.getBooker().getId();
         long ownerId = booking.getItem().getOwner().getId();

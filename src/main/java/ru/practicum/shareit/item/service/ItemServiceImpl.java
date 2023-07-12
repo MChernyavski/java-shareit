@@ -54,6 +54,7 @@ public class ItemServiceImpl implements ItemService {
                 new NotFoundException("Отсутствует пользователь c id " + userId));
 
         Item item = ItemMapper.toItem(itemDto, user);
+
         Item currentItem = itemRepository.findById(itemId).
                 orElseThrow(() -> new NotFoundException("Не найден предмет с id " + itemId));
 
@@ -122,10 +123,12 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> searchItem(String text) {
         List<ItemDto> allItemDto = new ArrayList<>();
+
         if (text.isBlank()) {
             return allItemDto;
         }
         List<Item> items = itemRepository.search(text);
+
         for (Item item : items) {
             if (Objects.equals(item.getAvailable(), true)) {
                 allItemDto.add(ItemMapper.toItemDto(item));
