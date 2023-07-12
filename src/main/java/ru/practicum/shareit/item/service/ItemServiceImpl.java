@@ -55,8 +55,8 @@ public class ItemServiceImpl implements ItemService {
 
         Item item = ItemMapper.toItem(itemDto, user);
 
-        Item currentItem = itemRepository.findById(itemId).
-                orElseThrow(() -> new NotFoundException("Не найден предмет с id " + itemId));
+        Item currentItem = itemRepository.findById(itemId)
+                .orElseThrow(() -> new NotFoundException("Не найден предмет с id " + itemId));
 
         if (currentItem.getOwner().getId() != userId) {
             throw new NotFoundException("id пользователя не совпадает с id вещи");
@@ -139,8 +139,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public CommentDto addComment(long itemId, long userId, CommentDto commentDto) {
-        Item item = itemRepository.findById(itemId).
-                orElseThrow(() -> new NotFoundException("Не найден предмет с id " + itemId));
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new NotFoundException("Не найден предмет с id " + itemId));
 
         User author = userRepository.findById(userId).orElseThrow(() ->
                 new NotFoundException("Отсутствует пользователь c id " + userId));
