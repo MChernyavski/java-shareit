@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 
@@ -37,4 +38,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByItemId(Long itemId, Sort sort);
 
     List<Booking> findByItemIdIn(List<Long> itemsIds, Sort sort);
+
+    @Query("select b from Booking b " +
+            "inner join Item i on b.item.id = i.id " +
+            "where i.owner.id = :ownerId " +
+            "and b.id = :bookingId ")
+    Booking findByIdAndOwnerId(Long bookingId, Long ownerId);
 }

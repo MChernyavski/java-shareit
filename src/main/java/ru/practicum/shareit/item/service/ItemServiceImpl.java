@@ -40,7 +40,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto addItem(long userId, ItemDto itemDto) {
-        validateItemDto(itemDto);
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new NotFoundException("Отсутствует пользователь c id " + userId));
         Item item = ItemMapper.toItem(itemDto, user);
@@ -74,6 +73,7 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.toItemDto(itemRepository.save(currentItem));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public ItemBookingAndCommentDto getItemById(long itemId, long userId) {
 
@@ -91,6 +91,7 @@ public class ItemServiceImpl implements ItemService {
                 allComments == null ? new ArrayList<>() : allComments);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<ItemBookingAndCommentDto> getAllItemsByUser(long userId) {
         User user = userRepository.findById(userId).orElseThrow(() ->
@@ -120,6 +121,7 @@ public class ItemServiceImpl implements ItemService {
         return itemBookingAndCommentDtoList;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<ItemDto> searchItem(String text) {
         List<ItemDto> allItemDto = new ArrayList<>();
@@ -153,7 +155,6 @@ public class ItemServiceImpl implements ItemService {
             log.warn("Пользователь с id {} не арендовал вещь с id {}", userId, itemId);
             throw new ValidateException("Пользователь, который раньше не арендовывал вещь, не может оставить комментарий");
         }
-
         Comment comment = CommentMapper.toComment(commentDto);
         comment.setItem(item);
         comment.setAuthor(author);
@@ -234,17 +235,5 @@ public class ItemServiceImpl implements ItemService {
             commentsForAllItems.get(id).add(commentDto);
         }
         return commentsForAllItems;
-    }
-
-    public void validateItemDto(ItemDto itemDto) {
-        if (itemDto.getAvailable() == null) {
-            throw new ValidateException("Available not found");
-        }
-        if (itemDto.getName() == "") {
-            throw new ValidateException("Name is empty");
-        }
-        if (itemDto.getDescription() == "" || itemDto.getDescription() == null) {
-            throw new ValidateException("Description is empty");
-        }
     }
 }

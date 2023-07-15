@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 
-import ru.practicum.shareit.exception.ValidateException;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -24,9 +23,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto createUser(UserDto userDto) {
         User user = UserMapper.toUser(userDto);
-        validateUser(user);
         user = userRepository.save(user);
-        log.info("Создан новый пользователь: {}.", user);
         return UserMapper.toUserDto(user);
     }
 
@@ -53,6 +50,7 @@ public class UserServiceImpl implements UserService {
         return UserMapper.toUserDto(user);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<UserDto> getAllUsers() {
         List<User> users = userRepository.findAll();
@@ -62,19 +60,5 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(long id) {
         userRepository.deleteById(id);
-    }
-
-    private void validateUser(User user) {
-        if (user.getEmail() == null || user.getEmail().isBlank()) {
-            log.error("ERROR: электронная почта пустая");
-            throw new ValidateException("Электронная почта не может быть пустой");
-        }
-        if (!user.getEmail().contains("@")) {
-            log.error("ERROR: в электронном почте нет символа @");
-            throw new ValidateException("Электронная почта должна содержать символ @");
-        }
-        if (user.getName() == null || user.getName().isBlank()) {
-            throw new NotFoundException("Пользователь не найден" + user.getName());
-        }
     }
 }
