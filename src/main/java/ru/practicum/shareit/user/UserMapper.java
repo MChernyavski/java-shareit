@@ -8,11 +8,11 @@ import ru.practicum.shareit.user.dto.UserDto;
 public final class UserMapper {
 
     public static UserDto toUserDto(User user) { // преобразование Юзера в ДТО
-        return new UserDto(
-                user.getId(),
-                user.getName(),
-                user.getEmail()
-        );
+        return UserDto.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .build();
     }
 
     public static User toUser(UserDto userDto) { //преобразование ДТО в Юзера

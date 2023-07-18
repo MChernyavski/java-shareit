@@ -1,36 +1,37 @@
 package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping(path = "/users")
 @Slf4j
 @RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
     private final UserService userService;
 
     @PostMapping
-    public UserDto createUser(@RequestBody UserDto userDto) {
-        log.info("Добавили нового пользователя {}", userDto.getName());
+    public UserDto createUser(@RequestBody @Valid UserDto userDto) {
+        log.info("Создан новый пользователь: {}.", userDto.getName());
         return userService.createUser(userDto);
     }
 
     @PatchMapping("/{id}")
     public UserDto updateUser(@RequestBody UserDto userDto, @PathVariable long id) {
         log.info("Обновили данные пользователя {}", userDto.getName());
-        return userService.updateUser(userDto, id);
+        return userService.updateUser(id, userDto);
     }
 
     @GetMapping
     public List<UserDto> getAllUsers() {
+        log.info("Список пользователей");
         return userService.getAllUsers();
     }
 
