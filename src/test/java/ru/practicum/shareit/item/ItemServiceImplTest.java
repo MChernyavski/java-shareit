@@ -70,7 +70,6 @@ public class ItemServiceImplTest {
         commentOne = new Comment(1L, "text", itemOne, userOneBooker, LocalDateTime.now());
         booking1 = new Booking(1L, LocalDateTime.of(2023, 8, 16, 22, 00),
                 LocalDateTime.of(2023, 9, 16, 22, 00), itemOne, userOneBooker, Status.WAITING);
-
     }
 
     @Test

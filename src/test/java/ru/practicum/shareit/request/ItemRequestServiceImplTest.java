@@ -92,7 +92,16 @@ public class ItemRequestServiceImplTest {
 
         assertNotNull(itemRequestWithItemsDtos);
         assertEquals(1, itemRequestWithItemsDtos.size());
+    }
 
+    @Test
+    public void getAllRequestByUserTest_WhenUserNotFound() {
+        long userId = 999L;
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        NotFoundException e = assertThrows(NotFoundException.class,
+                () -> itemRequestService.getAllRequestsByUser(userId));
+
+        assertEquals("Отсутствует пользователь c id " + userId, e.getMessage());
     }
 
     @Test

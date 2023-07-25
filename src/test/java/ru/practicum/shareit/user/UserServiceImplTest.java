@@ -13,7 +13,6 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -91,6 +90,18 @@ public class UserServiceImplTest {
         assertEquals(userId, updatedUserDto.getId());
         assertEquals(updatedEmail, updatedUserDto.getEmail());
     }
+
+    @Test
+    public void updateUserNotFoundTest() {
+        long userId = 999L;
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        NotFoundException e = assertThrows(
+                NotFoundException.class,
+                () -> userServiceImpl.getUserById(userId));
+        assertEquals("Отсутствует пользователь c id " + userId, e.getMessage());
+    }
+
 
     @Test
     public void getUserByIdTest() {
