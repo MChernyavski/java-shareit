@@ -143,4 +143,27 @@ public class ItemRequestServiceImplTest {
         verify(itemRequestRepository, times(1)).findById(anyLong());
         verify(itemRepository, times(1)).findAllByRequestId(anyLong());
     }
+
+    @Test
+    public void getRequestByIdWhenUserNotFoundTest() {
+        long userId = 999L;
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        NotFoundException e = assertThrows(NotFoundException.class,
+                () -> itemRequestService.getRequestById(userId, itemRequestOne.getId()));
+
+        assertEquals("Отсутствует пользователь c id " + userId, e.getMessage());
+    }
+
+    @Test
+    public void getRequestByIdWhenRequestNotFoundTest() {
+        long itemRequestId = 999L;
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(userOne));
+        when(itemRequestRepository.findById(itemRequestId)).thenReturn(Optional.empty());
+
+        NotFoundException e = assertThrows(NotFoundException.class,
+                () -> itemRequestService.getRequestById(userOne.getId(), itemRequestId));
+
+        assertEquals("Отсутствует запрос c таким id " + itemRequestId, e.getMessage());
+    }
 }
