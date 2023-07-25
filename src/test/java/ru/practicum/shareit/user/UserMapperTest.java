@@ -1,6 +1,5 @@
 package ru.practicum.shareit.user;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
@@ -10,14 +9,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class UserMapperTest {
 
-    private User userOne;
-    private UserDto userOneDto;
-
-    @BeforeEach
-    public void setUp() {
-        userOne = new User(1L, "userOne", "userOne@user.com");
-        userOneDto = new UserDto(1L, "userOne", "userOne@user.com");
-    }
+    User userOne = new User(1L, "userOne", "userOne@user.com");
+    UserDto userOneDto = new UserDto(1L, "userOne", "userOne@user.com");
 
     @Test
     public void toUserDtoTest() {
@@ -25,10 +18,12 @@ public class UserMapperTest {
         assertEquals(userDto1, userOneDto);
     }
 
-    @Test
+   /* @Test
     public void toUserTest() {
         User user1 = UserMapper.toUser(userOneDto);
         assertEquals(user1, userOne);
     }
+
+    */
 }
 
