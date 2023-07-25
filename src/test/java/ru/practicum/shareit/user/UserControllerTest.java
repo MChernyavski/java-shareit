@@ -41,7 +41,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void addNewUser() throws Exception {
+    public void addNewUserTest() throws Exception {
         when(userService.createUser(any()))
                 .thenReturn(userDto);
 
@@ -57,7 +57,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void updateUser() throws Exception {
+    public void updateUserTest() throws Exception {
         UserDto userDtoNew = new UserDto(1L, "nameUpdate", "update@user.com");
 
         when(userService.updateUser(1L, userDtoNew)).thenReturn(userDtoNew);
@@ -74,7 +74,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void getAllUsers() throws Exception {
+    public void getAllUsersTest() throws Exception {
         when(userService.getAllUsers()).thenReturn(List.of(userDto));
 
         mvc.perform(get("/users")
@@ -90,7 +90,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void getUserById() throws Exception {
+    public void getUserByITest() throws Exception {
         when(userService.getUserById(userDto.getId())).thenReturn(userDto);
 
         mvc.perform(get("/users/1")
@@ -105,7 +105,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void deleteUser() throws Exception {
+    public void deleteUserTest() throws Exception {
         mvc.perform(delete("/users/1"))
                 .andExpect(status().isOk());
     }

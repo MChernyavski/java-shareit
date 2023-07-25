@@ -101,7 +101,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void getUserByNotFoundIdTest() {
+    public void getUserByIdNotFoundIdTest() {
         long userNotCorrectId = 25L;
         when(userRepository.findById(userNotCorrectId)).thenReturn(Optional.empty());
         NotFoundException e = assertThrows(

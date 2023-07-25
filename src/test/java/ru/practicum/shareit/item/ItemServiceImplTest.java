@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemBookingAndCommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -28,8 +29,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -128,6 +128,17 @@ public class ItemServiceImplTest {
         assertEquals(itemBookingAndCommentDto.getComments().get(0).getId(), commentOne.getId());
     }
 
+    @Test
+    public void getItemById_WhenItemNotFoundTest() {
+        long itemId = 999L;
+        when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
+
+        NotFoundException e = assertThrows(
+                NotFoundException.class,
+                () -> itemService.getItemById(itemId, userTwoOwner.getId()));
+
+        assertEquals("Отсутствует вещь c id " + itemId, e.getMessage());
+    }
 
     @Test
     public void getAllItemsByUserTest() {
@@ -147,7 +158,6 @@ public class ItemServiceImplTest {
 
     @Test
     public void searchByTextTest() {
-
         ItemDto itemDto = ItemMapper.toItemDto(itemOne);
         when(itemRepository.search(anyString(), any())).thenReturn(List.of(itemOne));
         List<ItemDto> itemDtos = itemService.searchItem("itemDescriptionOne", 0, 10);

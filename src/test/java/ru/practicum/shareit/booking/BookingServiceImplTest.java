@@ -181,6 +181,17 @@ public class BookingServiceImplTest {
     }
 
     @Test
+    public void getBookingById_WhenUserNotFoundTest() {
+        long userId = 999L;
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        NotFoundException e = assertThrows(
+                NotFoundException.class,
+                () -> bookingService.getBookingById(userId, booking.getId()));
+        assertEquals("Не найден пользователь с id " + userId, e.getMessage());
+    }
+
+    @Test
     public void getBookingById_WhenUserNotBookerOrOwnerTest() {
         when(userRepository.findById(user3.getId())).thenReturn(Optional.of(user3));
         when(bookingRepository.findById(anyLong())).thenReturn(Optional.ofNullable(booking));
@@ -327,7 +338,6 @@ public class BookingServiceImplTest {
         bookingResponseDtos = bookingService.getAllBookingsByOwner(userId, State.REJECTED, from, size);
         assertNotNull(bookingResponseDtos);
         assertEquals(1, bookingResponseDtos.size());
-
     }
 }
 
