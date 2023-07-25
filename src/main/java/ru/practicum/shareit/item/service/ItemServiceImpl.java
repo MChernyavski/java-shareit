@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +19,10 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.user.*;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
+import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -38,11 +42,18 @@ public class ItemServiceImpl implements ItemService {
 
     private final CommentRepository commentRepository;
 
+    private final ItemRequestRepository itemRequestRepository;
+
     @Override
     public ItemDto addItem(long userId, ItemDto itemDto) {
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new NotFoundException("Отсутствует пользователь c id " + userId));
         Item item = ItemMapper.toItem(itemDto, user);
+        if (itemDto.getRequestId() != null) {
+            ItemRequest itemRequest = itemRequestRepository.findById(itemDto.getRequestId()).orElseThrow(() ->
+                    new NotFoundException("Отсутствует такой запрос"));
+            item.setRequest(itemRequest);
+        }
         item = itemRepository.save(item);
         return ItemMapper.toItemDto(item);
     }
@@ -93,11 +104,12 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ItemBookingAndCommentDto> getAllItemsByUser(long userId) {
+    public List<ItemBookingAndCommentDto> getAllItemsByUser(long userId, int from, int size) {
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new NotFoundException("Отсутствует пользователь c id " + userId));
 
-        List<Item> items = itemRepository.findAllByOwnerId(userId, Sort.by("id").ascending());
+        List<Item> items = itemRepository.findAllByOwnerId(userId,
+                PageRequest.of(from, size, Sort.by("id").ascending()));
 
         if (items.isEmpty()) {
             return Collections.emptyList(); // если список пустой, вернули пустой список
@@ -123,13 +135,13 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ItemDto> searchItem(String text) {
+    public List<ItemDto> searchItem(String text, int from, int size) {
         List<ItemDto> allItemDto = new ArrayList<>();
 
         if (text.isBlank()) {
             return allItemDto;
         }
-        List<Item> items = itemRepository.search(text);
+        List<Item> items = itemRepository.search(text, PageRequest.of(from, size, Sort.by("id").ascending()));
 
         for (Item item : items) {
             if (Objects.equals(item.getAvailable(), true)) {
