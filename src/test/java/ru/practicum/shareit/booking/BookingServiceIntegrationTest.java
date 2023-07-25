@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
-import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
@@ -44,8 +43,8 @@ public class BookingServiceIntegrationTest {
         Item item = makeItem("Frigde", "New", userOwner);
         ItemDto itemDto = itemService.addItem(userOwnerDto.getId(), ItemMapper.toItemDto(item));
 
-        BookingRequestDto bookingRequestDto = makeBookingRequestDto
-                (LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(10), itemDto.getId());
+        BookingRequestDto bookingRequestDto = makeBookingRequestDto(LocalDateTime.now().plusDays(1),
+                LocalDateTime.now().plusDays(10), itemDto.getId());
 
         BookingResponseDto bookingResponseDto1 = bookingService.addBooking(bookingRequestDto, userBookerDto.getId());
 

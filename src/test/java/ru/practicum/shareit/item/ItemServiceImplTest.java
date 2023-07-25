@@ -28,8 +28,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -168,8 +166,8 @@ public class ItemServiceImplTest {
         when(bookingRepository.findByBookerIdAndItemIdAndStatusEqualsAndEndIsBefore(anyLong(), anyLong(), any(), any()))
                 .thenReturn(List.of(booking1));
         when(commentRepository.save(any())).thenReturn(commentOne);
-        CommentDto commentDto = itemService.addComment(userOneBooker.getId(), itemOne.getId(), CommentDto.builder().
-                text("text").build());
+        CommentDto commentDto = itemService.addComment(userOneBooker.getId(), itemOne.getId(), CommentDto.builder()
+                .text("text").build());
 
         assertNotNull(commentDto);
         assertEquals(commentOne.getId(), commentDto.getId());

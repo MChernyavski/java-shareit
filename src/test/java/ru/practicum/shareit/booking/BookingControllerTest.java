@@ -12,12 +12,10 @@ import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserDtoTest;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
@@ -33,7 +31,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.practicum.shareit.booking.model.State.ALL;
-import static ru.practicum.shareit.booking.model.State.WAITING;
 
 @WebMvcTest(controllers = BookingController.class)
 public class BookingControllerTest {
@@ -49,8 +46,7 @@ public class BookingControllerTest {
 
     private BookingRequestDto bookingRequestDto;
     private BookingResponseDto bookingResponseDto;
-private UserDto userDto;
-private ItemDto itemDto;
+
     @BeforeEach
     public void setUp() {
         User user = new User(1L, "Masha", "userOne@user.com");
@@ -60,14 +56,6 @@ private ItemDto itemDto;
                 item, user, Status.WAITING);
         bookingRequestDto = BookingMapper.bookingRequestDto(booking);
         bookingResponseDto = BookingMapper.toBookingResponseDto(booking);
-
-        /*
-        bookingRequestDto = new BookingRequestDto(1L, LocalDateTime.now().minusDays(10),
-                LocalDateTime.now().plusDays(10), 1L);
-        bookingResponseDto = new BookingResponseDto(1L, bookingRequestDto.getStart(), bookingRequestDto.getEnd(),
-                item, user, Status.WAITING);
-
-         */
     }
 
     @Test

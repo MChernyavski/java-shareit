@@ -11,7 +11,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestWithItemsDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
-import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
 import java.nio.charset.StandardCharsets;
@@ -42,7 +41,6 @@ public class ItemRequestControllerTest {
 
     private ItemRequestDto itemRequestDto;
     private ItemRequestWithItemsDto itemRequestWithItemsDto;
-    // private UserDto userDto;
 
     @BeforeEach
     public void setUp() {
