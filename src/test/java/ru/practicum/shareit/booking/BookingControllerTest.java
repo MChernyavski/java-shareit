@@ -12,8 +12,10 @@ import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.exception.BadRequestStateException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -22,8 +24,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -141,5 +142,23 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$.size()", is(1)))
                 .andExpect(jsonPath("$[0].id", is(bookingResponseDto.getId()), Long.class))
                 .andExpect(jsonPath("$[0].status", is(bookingResponseDto.getStatus().toString()), String.class));
+    }
+
+    @Test
+    public void getAllBookingsByOwnerUnsupportedStatusTest() throws Exception {
+        when(bookingService.getAllBookingsByOwner(anyLong(), any(), anyInt(), anyInt()))
+                .thenThrow(new BadRequestStateException(State.UNSUPPORTED_STATUS.name()));
+
+        mvc.perform(get("/bookings/owner")
+                        .header("X-Sharer-User-Id", "2")
+                        .param("State", "Hello")
+                        .param("from", "0")
+                        .param("size", "1")
+                        .content(mapper.writeValueAsString(List.of(bookingResponseDto)))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("Unknown state: UNSUPPORTED_STATUS")));
     }
 }
