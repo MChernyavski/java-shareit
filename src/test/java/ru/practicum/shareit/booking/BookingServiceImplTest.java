@@ -31,7 +31,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -102,6 +102,20 @@ public class BookingServiceImplTest {
     }
 
     @Test
+    public void addBooking_WhenBookerIsOwner() {
+        long ownerId = userOwner.getId();
+        long itemId = item.getId();
+
+        when(userRepository.findById(ownerId)).thenReturn(Optional.of(userOwner));
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+
+        NotFoundException e = assertThrows(NotFoundException.class,
+                () -> bookingService.addBooking(bookingRequest, ownerId));
+
+        assertEquals("Владелец вещи не может забронировать свою же вещь", e.getMessage());
+    }
+
+    @Test
     public void addBooking_WhenTimeNotCorrectTest() {
         BookingRequestDto bookingWithNotCorrectTime = new BookingRequestDto(3L,
                 LocalDateTime.now(),
@@ -118,13 +132,26 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    public void addBookingWhenItemNotAvailableTest() {
+    public void addBooking_WhenItemNotAvailableTest() {
         item.setAvailable(false);
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(userBooker));
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
         ValidateException e = assertThrows(ValidateException.class,
                 () -> bookingService.addBooking(bookingRequest, userBooker.getId()));
         assertEquals("Вещь не доступна для бронирования", e.getMessage());
+    }
+
+    @Test
+    public void addBooking_WhenUserNotFoundTest() {
+        BookingRequestDto newRequest = BookingMapper.bookingRequestDto(booking2);
+        long userId = 4L;
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        NotFoundException e = assertThrows(NotFoundException.class,
+                () -> bookingService.addBooking(newRequest, userId));
+
+        assertNotNull(e);
+        assertEquals("Не найден пользователь с id " + userId, e.getMessage());
     }
 
     @Test
@@ -168,6 +195,16 @@ public class BookingServiceImplTest {
         assertEquals("Статус бронирования изменить нельзя", e.getMessage());
     }
 
+    @Test
+    public void approveBooking_WhenBookingNotFoundTest() {
+        long bookingId = 4L;
+        when(bookingRepository.findByIdAndOwnerId(bookingId, userOwner.getId()))
+                .thenThrow(new NotFoundException("Не найдено бронирование с id " + bookingId));
+
+        NotFoundException e = assertThrows(NotFoundException.class,
+                () -> bookingService.approveBooking(userOwner.getId(), bookingId, true));
+        assertEquals("Не найдено бронирование с id " + bookingId, e.getMessage());
+    }
 
     @Test
     public void getBookingByIdTest() {
@@ -177,7 +214,34 @@ public class BookingServiceImplTest {
         BookingResponseDto bookingResponseDto = bookingService.getBookingById(userBooker.getId(), booking.getId());
         assertNotNull(bookingResponseDto);
         assertEquals(bookingResponseDto.getId(), booking.getId());
+    }
 
+    @Test
+    public void getBookingByIdOwner() {
+        long ownerId = userOwner.getId();
+        long bookingId = booking.getId();
+
+        when(userRepository.findById(ownerId)).thenReturn(Optional.of(userOwner));
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
+
+        BookingResponseDto bookingResponseDto = bookingService.getBookingById(ownerId, bookingId);
+
+        assertNotNull(bookingResponseDto);
+        assertEquals(bookingId, bookingResponseDto.getId());
+    }
+
+    @Test
+    public void getBookingByIdBooker() {
+        long bookerId = userBooker.getId();
+        long bookingId = booking.getId();
+
+        when(userRepository.findById(bookerId)).thenReturn(Optional.of(userOwner));
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
+
+        BookingResponseDto bookingResponseDto = bookingService.getBookingById(bookerId, bookingId);
+
+        assertNotNull(bookingResponseDto);
+        assertEquals(bookingId, bookingResponseDto.getId());
     }
 
     @Test
@@ -189,6 +253,18 @@ public class BookingServiceImplTest {
                 NotFoundException.class,
                 () -> bookingService.getBookingById(userId, booking.getId()));
         assertEquals("Не найден пользователь с id " + userId, e.getMessage());
+    }
+
+    @Test
+    public void getBookingById_WhenBookingNotFoundTest() {
+        long bookingId = 5L;
+        when(userRepository.findById(user3.getId())).thenReturn(Optional.ofNullable(user3));
+        when(bookingRepository.findById(bookingId))
+                .thenThrow(new NotFoundException("Не найдено бронирование с id " + bookingId));
+
+        NotFoundException e = assertThrows(NotFoundException.class,
+                () -> bookingService.getBookingById(user3.getId(), bookingId));
+        assertEquals("Не найдено бронирование с id " + bookingId, e.getMessage());
     }
 
     @Test
