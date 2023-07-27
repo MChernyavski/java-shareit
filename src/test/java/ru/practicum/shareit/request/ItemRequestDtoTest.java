@@ -21,7 +21,7 @@ public class ItemRequestDtoTest {
     @Test
     void testItemRequestDto() throws Exception {
         User user1 = new User(1L, "Masha", "masha@user.com");
-        ItemRequestDto itemRequestDto = new ItemRequestDto(1L, "sofa", user1,
+        ItemRequestDto itemRequestDto = new ItemRequestDto(1L, "sofa",
                 LocalDateTime.now().minusMinutes(20));
 
         JsonContent<ItemRequestDto> result = json.write(itemRequestDto);

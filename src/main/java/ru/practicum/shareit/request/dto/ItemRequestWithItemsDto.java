@@ -17,7 +17,7 @@ public class ItemRequestWithItemsDto {
     private Long id;
     @NotBlank
     private String description;
-    private User requestor; //тот юзер, который создал запрос
+    private User requestor;
     private LocalDateTime created;
     private List<ItemDto> items;
 }

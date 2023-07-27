@@ -45,7 +45,7 @@ public class ItemRequestControllerTest {
     @BeforeEach
     public void setUp() {
         User user = new User(1L, "Masha", "userOne@user.com");
-        itemRequestDto = new ItemRequestDto(1L, "NeedNewTable", user, LocalDateTime.now());
+        itemRequestDto = new ItemRequestDto(1L, "NeedNewTable", LocalDateTime.now());
         itemRequestWithItemsDto = new ItemRequestWithItemsDto(2L, "FridgeWhite", user, LocalDateTime.now(), new ArrayList<>());
     }
 

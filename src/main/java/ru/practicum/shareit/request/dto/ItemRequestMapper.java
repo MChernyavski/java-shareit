@@ -15,7 +15,6 @@ public final class ItemRequestMapper {
         return new ItemRequestDto(
                 itemRequest.getId(),
                 itemRequest.getDescription(),
-                itemRequest.getRequestor(),
                 itemRequest.getCreated()
         );
     }
