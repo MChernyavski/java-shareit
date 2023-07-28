@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,8 +19,8 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidateException;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 
 import java.time.LocalDateTime;
@@ -118,7 +119,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<BookingResponseDto> getAllBookingByUserId(long userId, State state) {
+    public List<BookingResponseDto> getAllBookingByUserId(long userId, State state, int from, int size) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Не найден пользователь с id" + userId));
@@ -128,22 +129,27 @@ public class BookingServiceImpl implements BookingService {
 
         switch (state) {
             case ALL:
-                bookings = bookingRepository.findByBookerId(userId, sort);
+                bookings = bookingRepository.findByBookerId(userId, PageRequest.of(from / size, size, sort));
                 break;
             case PAST:
-                bookings = bookingRepository.findByBookerIdAndEndIsBefore(userId, time, sort);
+                bookings = bookingRepository.findByBookerIdAndEndIsBefore(userId, time,
+                        PageRequest.of(from, size, sort));
                 break;
             case CURRENT:
-                bookings = bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfter(userId, time, time, sort);
+                bookings = bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfter(userId, time, time,
+                        PageRequest.of(from, size, Sort.by("id").ascending()));
                 break;
             case FUTURE:
-                bookings = bookingRepository.findByBookerIdAndStartIsAfter(userId, time, sort);
+                bookings = bookingRepository.findByBookerIdAndStartIsAfter(userId, time,
+                        PageRequest.of(from, size, sort));
                 break;
             case WAITING:
-                bookings = bookingRepository.findByBookerIdAndStatus(userId, Status.WAITING, sort);
+                bookings = bookingRepository.findByBookerIdAndStatus(userId, Status.WAITING,
+                        PageRequest.of(from, size, sort));
                 break;
             case REJECTED:
-                bookings = bookingRepository.findByBookerIdAndStatus(userId, Status.REJECTED, sort);
+                bookings = bookingRepository.findByBookerIdAndStatus(userId, Status.REJECTED,
+                        PageRequest.of(from, size, sort));
                 break;
             default:
                 throw new BadRequestStateException(state.name());
@@ -153,7 +159,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<BookingResponseDto> getAllBookingsByOwner(long ownerId, State state) {
+    public List<BookingResponseDto> getAllBookingsByOwner(long ownerId, State state, int from, int size) {
         User owner = userRepository.findById(ownerId)
                 .orElseThrow(() -> new NotFoundException("Не найден пользователь с id" + ownerId));
 
@@ -162,22 +168,27 @@ public class BookingServiceImpl implements BookingService {
 
         switch (state) {
             case ALL:
-                bookings = bookingRepository.findByItemOwnerId(ownerId, sort);
+                bookings = bookingRepository.findByItemOwnerId(ownerId, PageRequest.of(from, size, sort));
                 break;
             case PAST:
-                bookings = bookingRepository.findByItemOwnerIdAndEndIsBefore(ownerId, time, sort);
+                bookings = bookingRepository.findByItemOwnerIdAndEndIsBefore(ownerId, time,
+                        PageRequest.of(from, size, sort));
                 break;
             case CURRENT:
-                bookings = bookingRepository.findByItemOwnerIdAndStartIsBeforeAndEndIsAfter(ownerId, time, time, sort);
+                bookings = bookingRepository.findByItemOwnerIdAndStartIsBeforeAndEndIsAfter(ownerId, time, time,
+                        PageRequest.of(from, size, Sort.by("id").ascending()));
                 break;
             case FUTURE:
-                bookings = bookingRepository.findByItemOwnerIdAndStartIsAfter(ownerId, time, sort);
+                bookings = bookingRepository.findByItemOwnerIdAndStartIsAfter(ownerId, time,
+                        PageRequest.of(from, size, sort));
                 break;
             case WAITING:
-                bookings = bookingRepository.findByItemOwnerIdAndStatus(ownerId, Status.WAITING, sort);
+                bookings = bookingRepository.findByItemOwnerIdAndStatus(ownerId, Status.WAITING,
+                        PageRequest.of(from, size, sort));
                 break;
             case REJECTED:
-                bookings = bookingRepository.findByItemOwnerIdAndStatus(ownerId, Status.REJECTED, sort);
+                bookings = bookingRepository.findByItemOwnerIdAndStatus(ownerId, Status.REJECTED,
+                        PageRequest.of(from, size, sort));
                 break;
             default:
                 throw new BadRequestStateException(state.name());

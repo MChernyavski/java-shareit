@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemBookingAndCommentDto;
@@ -9,12 +10,15 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/items")
 @Slf4j
 @RequiredArgsConstructor
+@Validated
 public class ItemController {
 
     private final ItemService itemService;
@@ -42,16 +46,22 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemBookingAndCommentDto> getAllItemsByUser(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<ItemBookingAndCommentDto> getAllItemsByUser(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                            @RequestParam(name = "from", defaultValue = "0")
+                                                            @PositiveOrZero int from,
+                                                            @RequestParam(name = "size", defaultValue = "10")
+                                                            @Positive int size) {
         log.info("Cписок всех вещей пользователя");
-        return itemService.getAllItemsByUser(userId);
+        return itemService.getAllItemsByUser(userId, from, size);
     }
 
     @GetMapping("/search")
     public List<ItemDto> searchItem(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                    @RequestParam(value = "text") String text) {
+                                    @RequestParam(value = "text") String text,
+                                    @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero int from,
+                                    @RequestParam(name = "size", defaultValue = "10") @Positive int size) {
         log.info("Поиск вещи");
-        return itemService.searchItem(text);
+        return itemService.searchItem(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")
