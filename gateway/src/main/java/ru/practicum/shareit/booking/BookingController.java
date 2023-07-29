@@ -25,12 +25,6 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<Object> addBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
                                              @RequestBody @Valid BookItemRequestDto requestDto) {
-        /*  if (!requestDto.getEnd().isAfter(requestDto.getStart())) {
-            log.warn("Дата окончания бронирования должна быть после даты начала");
-            throw new ValidateException("Дата окончания бронирования должна быть после даты начала");
-        }
-
-         */
         log.info("Creating booking {}, userId={}", requestDto, userId);
         return bookingClient.addBooking(userId, requestDto);
     }
