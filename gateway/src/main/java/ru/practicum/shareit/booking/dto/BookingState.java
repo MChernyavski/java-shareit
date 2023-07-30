@@ -15,8 +15,6 @@ public enum BookingState {
     REJECTED,
     // Ожидающие подтверждения
     WAITING;
-    // Неизвестный статус
-   // UNSUPPORTED_STATUS;
 
     public static Optional<BookingState> from(String stringState) {
         for (BookingState state : values()) {
@@ -26,17 +24,4 @@ public enum BookingState {
         }
         return Optional.empty();
     }
-
-   /* @Component
-    public class StateToStringConverter implements Converter<String, BookingState> {
-        @Override
-        public BookingState convert(String source) {
-            try {
-                return BookingState.valueOf(source.toUpperCase());
-            } catch (IllegalArgumentException exception) {
-                return BookingState.UNSUPPORTED_STATUS;
-            }
-        }
-    }
-    */
 }
